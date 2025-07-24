@@ -1,80 +1,91 @@
 <?php
-    class Usuario{ 
-        //atributo
-        public $conexion;
-        //metodo constructor
-        public function __construct($conexion) {
-            $this->conexion = $conexion;
-           }
-           
+// Habilita excepciones para errores de MySQLi
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-           //metodos
-           public function consulta(){
-            $con = "SELECT * FROM usuario ORDER BY nombre"; // Consulta la tabla 'usuario'
-            $res = mysqli_query($this->conexion, $con);
-            $vec = [];
+class Usuario {
+    public $conexion;
 
-            while($row = mysqli_fetch_array($res, MYSQLI_ASSOC)){ // Usamos MYSQLI_ASSOC para claves asociativas
-                $vec[] = $row;    
-            }
+    public function __construct($conexion) {
+        $this->conexion = $conexion;
+    }
 
-            return $vec;
+    public function consulta() {
+        $sql = "SELECT id_usuario, clave, nombre, correo, tipo_usuario FROM usuario ORDER BY nombre";
+        $res = mysqli_query($this->conexion, $sql);
 
+        if (!$res) {
+            die('Error en la consulta: ' . mysqli_error($this->conexion));
         }
 
-        public function eliminar($id){
-            $del = "DELETE FROM usuario WHERE id_usuario = $id"; // Elimina por id_usuario
-            mysqli_query($this->conexion, $del);
-            $vec   = [];
-            $vec ['resultado'] = "OK";
-            $vec ['mensaje'] = 'El usuario ha sido eliminado';
-            return $vec;
+        $vec = [];
+        while ($row = mysqli_fetch_array($res, MYSQLI_ASSOC)) {
+            $vec[] = $row;
         }
 
-        public function insertar($params){
-            // Campos a insertar: clave, nombre, correo, tipo_usuario
-            $ins = "INSERT INTO usuario(clave, nombre, correo, tipo_usuario) VALUES(
-                '$params->clave', 
-                '$params->nombre', 
-                '$params->correo', 
-                '$params->tipo_usuario'
-            )";
-            mysqli_query($this->conexion, $ins);
-            $vec = [];
-            $vec ['resultado'] = "OK";
-            $vec ['mensaje'] = "El usuario ha sido guardado";
-            return $vec;    
+        return $vec;
+    }
+
+    public function eliminar($id) {
+        $vec = [];
+
+        try {
+            $sql = "DELETE FROM usuario WHERE id_usuario = $id";
+            mysqli_query($this->conexion, $sql);
+            $vec['resultado'] = "OK";
+            $vec['mensaje'] = "Usuario eliminado correctamente";
+        } catch (mysqli_sql_exception $e) {
+            $vec['resultado'] = "ERROR";
+            // Puedes capturar el error exacto si quieres: $e->getMessage()
+            $vec['mensaje'] = "No se puede eliminar: el usuario tiene registros asociados (por ejemplo, ventas)";
         }
 
+        return $vec;
+    }
 
-      public function editar($id, $params){
-        // Campos a editar: clave, nombre, correo, tipo_usuario
+   public function insertar($params) {
+    // Encriptar la clave con SHA1
+    $clave_encriptada = sha1($params->clave);
+
+    $ins = "INSERT INTO usuario(clave, nombre, correo, tipo_usuario) VALUES(
+        '$clave_encriptada', 
+        '$params->nombre', 
+        '$params->correo', 
+        '$params->tipo_usuario'
+    )";
+
+    mysqli_query($this->conexion, $ins);
+
+    $vec = [];
+    $vec['resultado'] = "OK";
+    $vec['mensaje'] = "El usuario ha sido guardado";
+    return $vec;
+}
+
+
+    public function editar($id, $params) {
         $editar = "UPDATE usuario SET 
             clave = '$params->clave', 
             nombre = '$params->nombre', 
             correo = '$params->correo', 
             tipo_usuario = '$params->tipo_usuario' 
-            WHERE id_usuario = $id"; // Edita por id_usuario
+            WHERE id_usuario = $id";
         mysqli_query($this->conexion, $editar);
         $vec = [];
         $vec['resultado'] = "OK";
         $vec['mensaje'] = "El usuario ha sido editado";
         return $vec;
-        }
-    
+    }
 
-        public function filtro($valor){
-            // Filtra por nombre o correo
-            $filtro = "SELECT * FROM usuario WHERE nombre LIKE '%$valor%' OR correo LIKE '%$valor%'";
-            $res = mysqli_query($this->conexion, $filtro);
-            $vec = [];
-            
-            while($row = mysqli_fetch_array($res, MYSQLI_ASSOC)){ // Usamos MYSQLI_ASSOC
-                $vec[] = $row;
+    public function filtro($valor) {
+        $filtro = "SELECT * FROM usuario WHERE nombre LIKE '%$valor%' OR correo LIKE '%$valor%'";
+        $res = mysqli_query($this->conexion, $filtro);
+        $vec = [];
+
+        while($row = mysqli_fetch_array($res, MYSQLI_ASSOC)){ 
+            $vec[] = $row;
         }
 
         return $vec;
     }
 }
-
 ?>

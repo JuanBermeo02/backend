@@ -27,7 +27,7 @@ $compras = new Compra($conexion);
         break;
         case 'editar':
              $json = file_get_contents('php://input');
-              $params = json_decode($json, associative: true);
+              $params = json_decode($json);
               $id = $_GET['id'];
               $vec = $compras->editar( $id, $params);
         break;

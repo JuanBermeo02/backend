@@ -7,7 +7,6 @@
             $this->conexion = $conexion;
          }
          
-
          //metodos
          public function consulta(){
             $con = "SELECT * FROM categoria ORDER BY nombre";

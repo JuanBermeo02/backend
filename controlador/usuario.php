@@ -1,45 +1,47 @@
 <?php
 header('Access-Control-Allow-Origin: *');
- header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept"); 
- 
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+header('Content-Type: application/json');
 
 require_once("../conexion.php");
 require_once("../modelos/usuario.php");
 
-$control = $_GET['control'];
-
+$control = $_GET['control'] ?? '';
 $usuario = new Usuario($conexion);
+$vec = [];
 
+switch ($control) {
+    case 'consulta':
+        $vec = $usuario->consulta();
+        break;
 
-    switch ($control) {
-        case 'consulta':
-            $vec = $usuario->consulta();
+    case 'insertar':
+        $json = file_get_contents('php://input');
+        $params = json_decode($json); 
+        $vec = $usuario->insertar($params);
         break;
-        case 'insertar':
-            $json = file_get_contents('php://input');
-            //$json = '{"clave":"clave123", "nombre":"Admin Principal", "correo":"admin@example.com", "tipo_usuario":"Administrador"}'; 
-            $params = json_decode($json);
-            $vec = $usuario->insertar( $params);
-        break;    
-        case 'eliminar':
-            $id = $_GET['id'];
-            $vec = $usuario->eliminar( $id );
+
+    case 'eliminar':
+        $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        $vec = $usuario->eliminar($id);
         break;
-        case 'editar':
-             $json = file_get_contents('php://input');
-              $params = json_decode($json, associative: true);
-              $id = $_GET['id'];
-              $vec = $usuario->editar( $id, $params);
+
+    case 'editar':
+        $json = file_get_contents('php://input');
+        $params = json_decode($json); 
+        $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        $vec = $usuario->editar($id, params: $params);
         break;
-        case 'filtro':
-            $dato = $_GET['dato'];
-            $vec = $usuario->filtro( $dato);
+
+    case 'filtro':
+        $dato = $_GET['dato'] ?? '';
+        $vec = $usuario->filtro($dato);
         break;
+
+    default:
+        $vec['resultado'] = 'ERROR';
+        $vec['mensaje'] = 'Acción no válida';
 }
 
-$datosj = json_encode($vec);
-echo $datosj;
-header('Content-Type: application/json');
-
+echo json_encode($vec);
 ?>
-

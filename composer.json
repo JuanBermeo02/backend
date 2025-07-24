@@ -1,0 +1,17 @@
+{
+    "name": "juanj/backend",
+    "autoload": {
+        "psr-4": {
+            "Juanj\\Backend\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Juan Jose Bermeo",
+            "email": "juanjosebermemotta@gmail.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^4.4"
+    }
+}

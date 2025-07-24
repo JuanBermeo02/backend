@@ -4,36 +4,35 @@ header('Access-Control-Allow-Origin: *');
  
 
 require_once("../conexion.php");
-require_once("../modelos/marca.php");
+require_once("../modelos/inventario.php");
 
 $control = $_GET['control'];
 
-$marca = new Marca($conexion);
+$inventario = new Inventario($conexion);
 
 
     switch ($control) {
         case 'consulta':
-            $vec = $marca->consulta();
+            $vec = $inventario->consulta();
         break;
         case 'insertar':
             $json = file_get_contents('php://input');
-            //$json = '{"nombre":"Corsair"}';
             $params = json_decode($json);
-            $vec = $marca->insertar( $params);
+            $vec = $inventario->insertar( $params);
         break;    
         case 'eliminar':
             $id = $_GET['id'];
-            $vec = $marca->eliminar( $id );
+            $vec = $inventario->eliminar( $id );
         break;
         case 'editar':
              $json = file_get_contents('php://input');
               $params = json_decode($json);
               $id = $_GET['id'];
-              $vec = $marca->editar( $id, $params);
+              $vec = $inventario->editar( $id, $params);
         break;
         case 'filtro':
             $dato = $_GET['dato'];
-            $vec = $marca->filtro( $dato);
+            $vec = $inventario->filtro( $dato);
         break;
 }
 

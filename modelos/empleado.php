@@ -10,20 +10,19 @@
 
            //metodos
            public function consulta(){
-            $con = "SELECT * FROM empleado ORDER BY nombre"; // Consulta la tabla 'empleado'
+            $con = "SELECT * FROM empleado ORDER BY nombre"; 
             $res = mysqli_query($this->conexion, $con);
             $vec = [];
 
-            while($row = mysqli_fetch_array($res, MYSQLI_ASSOC)){ // Usamos MYSQLI_ASSOC para claves asociativas
+            while($row = mysqli_fetch_array($res, MYSQLI_ASSOC)){ 
                 $vec[] = $row;    
             }
 
             return $vec;
 
         }
-
         public function eliminar($id){
-            $del = "DELETE FROM empleado WHERE id_empleado = $id"; // Elimina por id_empleado
+            $del = "DELETE FROM empleado WHERE id_empleado = $id"; 
             mysqli_query($this->conexion, $del);
             $vec   = [];
             $vec ['resultado'] = "OK";
@@ -32,7 +31,6 @@
         }
 
         public function insertar($params){
-            // Campos a insertar: nombre, documento, telefono, direccion, fo_ciudad
             $ins = "INSERT INTO empleado(nombre, documento, telefono, direccion, fo_ciudad) VALUES(
                 '$params->nombre', 
                 '$params->documento', 
@@ -49,14 +47,13 @@
 
 
       public function editar($id, $params){
-        // Campos a editar: nombre, documento, telefono, direccion, fo_ciudad
         $editar = "UPDATE empleado SET 
             nombre = '$params->nombre', 
             documento = '$params->documento', 
             telefono = '$params->telefono', 
             direccion = '$params->direccion', 
             fo_ciudad = $params->fo_ciudad 
-            WHERE id_empleado = $id"; // Edita por id_empleado
+            WHERE id_empleado = $id"; 
         mysqli_query($this->conexion, $editar);
         $vec = [];
         $vec['resultado'] = "OK";
@@ -66,12 +63,11 @@
     
 
         public function filtro($valor){
-            // Filtra por nombre, documento o teléfono
             $filtro = "SELECT * FROM empleado WHERE nombre LIKE '%$valor%' OR documento LIKE '%$valor%' OR telefono LIKE '%$valor%'";
             $res = mysqli_query($this->conexion, $filtro);
             $vec = [];
             
-            while($row = mysqli_fetch_array($res, MYSQLI_ASSOC)){ // Usamos MYSQLI_ASSOC
+            while($row = mysqli_fetch_array($res, MYSQLI_ASSOC)){ 
                 $vec[] = $row;
         }
 
